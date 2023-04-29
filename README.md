@@ -1,5 +1,5 @@
 ## Merkle Tree API
-This is Go implementation of Merkle Tree data structure, 
+This is Go implementation of Merkle Tree data structure,
 which is a hash-based data structure that is useful for verifying the integrity of data.
 It is used in many different contexts, including in blockchain technology.
 
@@ -63,6 +63,60 @@ Request Payload
 
 ````
 
+### Project layout
+
+This layout is following pattern:
+
+```text
+merkleTree
+└───
+    ├── .github
+    │   └── workflows
+    │     └── go.yml
+    ├── cmd
+    │   └── main.go
+    ├── internal
+    │   └── merkleTree.go
+    ├── internal
+    │   └── merkleProof.go
+    ├── internal
+    │   └── blake3.go
+    ├── build
+    │   └── Dockerfile
+    ├── Makefile
+    ├── README.md
+    └── <source packages>
+```
+
+## Setup
+
+### Getting started
+merkle-tree is available in github
+[merkle-tree](https://github.com/reactivejson/merkleTree)
+
+```shell
+go get github.com/reactivejson/merkleTree
+```
+
+#### Run
+```shell
+go run cmd/main.go
+```
+
+#### Build
+```shell
+make build
+```
+#### Testing
+```shell
+make test
+```
+### Build docker image:
+
+```bash
+make docker-build
+```
+This will build this application docker image so-called merkle-tree
 
 ## Benchmarking
 
