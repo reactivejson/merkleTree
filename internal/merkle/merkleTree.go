@@ -3,6 +3,7 @@ package merkletree
 import (
 	"bytes"
 	"errors"
+	hash2 "github.com/reactivejson/merkleTree/internal/merkle/hash"
 	"math"
 )
 
@@ -14,25 +15,26 @@ import (
 // MerkleTree is the structure for the Merkle tree.
 type MerkleTree struct {
 	// hash is a pointer to the hashing struct
-	hash HashType
+	hash hash2.HashType
 	// data is the data from which the Merkle tree is created
 	data [][]byte
 	// nodes are the leaf and branch nodes of the Merkle tree
 	nodes [][]byte
 }
 
-// Index of the data in the MerkleTree.
-func (t *MerkleTree) indexOf(input []byte) (uint64, error) {
+// dataIndex returns Index of the data in the MerkleTree.
+func (t *MerkleTree) dataIndex(input []byte) (uint64, error) {
 	for i, data := range t.data {
 		if bytes.Equal(data, input) {
 			return uint64(i), nil
 		}
 	}
-	return 0, errors.New("input not found")
+	return 0, errors.New("data not found")
 }
 
-// NewTree creates a new merkle tree using the provided information.
-func NewTree(data [][]byte, hash HashType) (*MerkleTree, error) {
+// NewTree creates a new Merkle tree using the provided raw input and default hash type.
+// data must contain at least one element for it to be valid.
+func NewTree(data [][]byte, hash hash2.HashType) (*MerkleTree, error) {
 
 	if len(data) == 0 {
 		return nil, errors.New("the merkle tree should contains at least 1 piece of input")
@@ -75,16 +77,8 @@ func NewTree(data [][]byte, hash HashType) (*MerkleTree, error) {
 	return tree, nil
 }
 
-// New creates a new Merkle tree using the provided raw input and default hash type.  Salting is not used.
-// input must contain at least one element for it to be valid.
-func New(data [][]byte) (*MerkleTree, error) {
-	return NewTree(data, NewBlake3())
-}
-
 // Hashes the input slice, placing the result hashes into dest.
-// salt adds a salt to the hash using the index.
-// sorted sorts the leaves and input by the value of the leaf hash.
-func createLeaves(data [][]byte, dest [][]byte, hash HashType) {
+func createLeaves(data [][]byte, dest [][]byte, hash hash2.HashType) {
 	for i := range data {
 		dest[i] = hash.Hash(data[i])
 	}
@@ -95,7 +89,7 @@ func createLeaves(data [][]byte, dest [][]byte, hash HashType) {
 // This function creates the non-leaf nodes of the tree by computing the hash of each pair of child nodes and storing
 // it in the corresponding parent node in the slice of nodes.
 // The process continues recursively until there is only one node left, which represents the root of the tree.
-func createNonLeaves(nodes [][]byte, hash HashType, leafOffset int) {
+func createNonLeaves(nodes [][]byte, hash hash2.HashType, leafOffset int) {
 	//  iterates through the nodes from the last leaf node to the root node.
 	for i := leafOffset - 1; i > 0; i-- {
 		// For each non-leaf node, it retrieves the left and right child nodes by accessing the nodes slice with the formula i2 and i2+1, respectively.
@@ -108,12 +102,12 @@ func createNonLeaves(nodes [][]byte, hash HashType, leafOffset int) {
 	}
 }
 
-// GenerateProof generates the proof for a piece of input.
+// GenerateMProof generates the proof for a piece of input.
 // If the input is not present in the tree this will return an error.
 // If the input is present in the tree this will return the hashes for each level in the tree and the index of the value in the tree.
-func (t *MerkleTree) GenerateProof(data []byte) (*MerkleProof, error) {
+func (t *MerkleTree) GenerateMProof(data []byte) (*MerkleProof, error) {
 	// Find the index of the input
-	index, err := t.indexOf(data)
+	index, err := t.dataIndex(data)
 	if err != nil {
 		return nil, err
 	}
@@ -141,8 +135,8 @@ func (t *MerkleTree) GenerateProof(data []byte) (*MerkleProof, error) {
 	return NewProof(hashes, index), nil
 }
 
-// Root returns the Merkle root (hash of the root node) of the tree.
-func (t *MerkleTree) Root() []byte {
+// MerkleRoot returns the Merkle root (hash of the root node) of the tree.
+func (t *MerkleTree) MerkleRoot() []byte {
 	// The first element in the slice is not used, and the second element represents the root node of the tree.
 	return t.nodes[1]
 }

@@ -1,4 +1,4 @@
-package merkletree
+package hash
 
 import (
 	"lukechampine.com/blake3"

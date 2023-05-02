@@ -1,9 +1,10 @@
-package merkletree_test
+package hash_test
 
 import (
 	"encoding/hex"
 	"fmt"
 	merkletree "github.com/reactivejson/merkleTree/internal/merkle"
+	hash2 "github.com/reactivejson/merkleTree/internal/merkle/hash"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,11 +17,11 @@ func TestBlake3(t *testing.T) {
 	}{
 		{
 			input: []byte("Consensys"),
-			hash:  stringToByte("37d279155d7afba864451532eb236103d43b8d410806322ea36be2b8f7731dfd"),
+			hash:  merkletree.stringToByte("37d279155d7afba864451532eb236103d43b8d410806322ea36be2b8f7731dfd"),
 		},
 	}
 
-	hash := merkletree.NewBlake3()
+	hash := hash2.NewBlake3()
 	for i, test := range tests {
 		res := hash.Hash(test.input)
 		fmt.Println(hex.EncodeToString(res))
@@ -44,7 +45,7 @@ func TestConcatHash(t *testing.T) {
 		},
 	}
 
-	hash := merkletree.NewBlake3()
+	hash := hash2.NewBlake3()
 	for i, test := range tests {
 		res := hash.Hash(test.input1, test.input2, test.input3)
 		assert.Equal(t, test.hash, res, fmt.Sprintf("failed at test %d", i))

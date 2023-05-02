@@ -1,4 +1,4 @@
-package merkletree
+package hash
 
 /**
  * @author Mohamed-Aly Bou-Hanane
