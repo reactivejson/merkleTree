@@ -2,6 +2,7 @@ package merkletree
 
 import (
 	"bytes"
+	"github.com/reactivejson/merkleTree/internal/merkle/hash"
 )
 
 /**
@@ -15,7 +16,7 @@ type MerkleProof struct {
 	Index  uint64   // The index of the input element for which the proof was generated
 }
 
-// newProof generates a Merkle proof.
+// NewProof generates a Merkle proof.
 func NewProof(hashes [][]byte, index uint64) *MerkleProof {
 	return &MerkleProof{
 		Hashes: hashes,
@@ -24,17 +25,13 @@ func NewProof(hashes [][]byte, index uint64) *MerkleProof {
 }
 
 // VerifyMProof verifies a Merkle tree proof for a piece of input using the default hash type.
-// The proof and path are as per Merkle tree's GenerateProof(), and root is the root hash of the tree against which the proof is to
+// The proof and path are as per Merkle tree's GenerateMProof(), and root is the root hash of the tree against which the proof is to
 // be verified.  Note that this does not require the Merkle tree to verify the proof, only its root; this allows for checking
 // against historical trees without having to instantiate them.
 //
 // This returns true if the proof is verified, otherwise false.
-func VerifyMProof(data []byte, proof *MerkleProof, root []byte) (bool, error) {
-	return VerifyMProofUsing(data, proof, root, NewBlake3())
-}
-
-func VerifyMProofUsing(data []byte, proof *MerkleProof, root []byte, hashType HashType) (bool, error) {
-	proofHash := generateProofHash(data, proof, hashType)
+func VerifyMProof(data []byte, proof *MerkleProof, root []byte, hashType hash.HashType) (bool, error) {
+	proofHash := proofHash(data, proof, hashType)
 	if bytes.Equal(root, proofHash) {
 		// If the hash in the root matches the proof hash, this line returns true and a nil error.
 		return true, nil
@@ -44,8 +41,8 @@ func VerifyMProofUsing(data []byte, proof *MerkleProof, root []byte, hashType Ha
 	return false, nil
 }
 
-// generateProofHash generates a proof hash for a piece of input using the provided Merkle proof and hash function.
-func generateProofHash(data []byte, proof *MerkleProof, hashType HashType) []byte {
+// proofHash generates a proof hash for a piece of input using the provided Merkle proof and hash function.
+func proofHash(data []byte, proof *MerkleProof, hashType hash.HashType) []byte {
 
 	var proofHash []byte
 

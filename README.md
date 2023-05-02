@@ -80,7 +80,8 @@ merkleTree
     ├── internal
     │   └── merkleProof.go
     ├── internal
-    │   └── blake3.go
+    │   └── hash
+    │     └── blake3.go
     ├── build
     │   └── Dockerfile
     ├── Makefile
@@ -123,26 +124,24 @@ This will build this application docker image so-called merkle-tree
 We have run benchmarks using the `go test` command with the following options: `-bench=Bench -benchtime=5s -benchmem`.
 
 ### Results
+goos: windows
+goarch: amd64
 
-| Function | Iterations | Execution Time | Memory Allocation | Number of Allocations |
-| -------- | ---------- | -------------- | ----------------- | --------------------- |
-| MerkleTree10 | 2354869 | 4105 ns/op | 760 B/op | 16 allocs/op |
-| MerkleTree100 | 976814 | 5134 ns/op | 1272 B/op | 25 allocs/op |
-| MerkleTree1000 | 818107 | 6514 ns/op | 1768 B/op | 34 allocs/op |
-| MerkleTree10000 | 561963 | 10252 ns/op | 2463 B/op | 46 allocs/op |
-| MerkleTree100000 | 470954 | 12149 ns/op | 3031 B/op | 56 allocs/op |
+cpu: 11th Gen Intel(R) Core(TM) i7-1185G7 @ 3.00GHz
+
+| Function                    | Iterations   | Execution Time   | Memory Allocation   | Allocations Per Operation |
+|-----------------------------|--------------|------------------|---------------------|---------------------------|
+| BenchmarkMerkleTree10-8     | 4907882      | 1213 ns/op       | 760 B/op            | 16 allocs/op              |
+| BenchmarkMerkleTree100-8    | 3520026      | 1769 ns/op       | 1272 B/op           | 25 allocs/op              |
+| BenchmarkMerkleTree1000-8   | 2718508      | 2374 ns/op       | 1768 B/op           | 34 allocs/op              |
+| BenchmarkMerkleTree10000-8  | 1714077      | 3344 ns/op       | 2458 B/op           | 46 allocs/op              |
+| BenchmarkMerkleTree100000-8 | 1598781      | 3777 ns/op       | 2975 B/op           | 55 allocs/op              |
+| MerkleTreeOneMillion        | 1111663      | 4552 ns/op       | 3731 B/op           | 69 allocs/op              |
+
 
 The `ns/op` column shows the average number of nanoseconds per operation. The `B/op` column shows the average number of bytes allocated per operation. The `allocs/op` column shows the average number of memory allocations per operation.
 
-The execution time is measured in nanoseconds per operation, and it indicates how long it takes to execute each operation. The execution time is calculated by multiplying the number of iterations by the average time per iteration. Here is the execution time for each function:
-
-| Function | Execution Time |
-| -------- | -------------- |
-| MerkleTree10 | 9.67 s |
-| MerkleTree100 | 5.01 s |
-| MerkleTree1000 | 5.33 s |
-| MerkleTree10000 | 5.76 s |
-| MerkleTree100000 | 5.72 s |
+The execution time is measured in nanoseconds per operation, and it indicates how long it takes to execute each operation. The execution time is calculated by multiplying the number of iterations by the average time per iteration.
 
 Note that the execution time may vary depending on the hardware and software configuration of the system running the benchmarks.
 
@@ -155,10 +154,10 @@ The package provides the merkletree package that contains the following function
 #### NewTree(data [][]byte, hash HashType) (*MerkleTree, error)
 This function creates a new MerkleTree struct that represents a Merkle tree of the given data using the specified HashType.
 
-#### GenerateProof(data []byte) (*MerkleProof, error)
+#### GenerateMProof(data []byte) (*MerkleProof, error)
 This function generates a Merkle proof for a given data element. It returns a MerkleProof struct.
 
-#### Root() []byte
+#### MerkleRoot() []byte
 This function returns the Merkle root hash.
 
 #### UpdateLeaf(index uint64, newData []byte) error

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	merkletree "github.com/reactivejson/merkleTree/internal/merkle"
+	"github.com/reactivejson/merkleTree/internal/merkle/hash"
 	"log"
 	"net/http"
 	"os"
@@ -39,7 +40,7 @@ func byteArray(req TreeRequest) [][]byte {
 	return data
 }
 
-var hashing = merkletree.NewBlake3()
+var hashing = hash.NewBlake3()
 
 // @Summary Create a new Merkle tree
 // @Description Creates a new Merkle tree with the given data
@@ -109,7 +110,7 @@ func VisualizeProof(c *gin.Context) {
 		c.Error(fmt.Errorf("no tree found  %v", data.Name))
 	} else {
 		// Generate a proof for data
-		proof, err := tree.GenerateProof([]byte(data.Data))
+		proof, err := tree.GenerateMProof([]byte(data.Data))
 		if err != nil {
 			c.Error(fmt.Errorf("failed to generate proof  %v", data.Name))
 		}
@@ -168,16 +169,16 @@ func ErrorHandler(c *gin.Context) {
 
 func verify(tree *merkletree.MerkleTree, data []byte) (*merkletree.MerkleProof, bool, error) {
 	// Fetch the root hash of the tree
-	root := tree.Root()
+	root := tree.MerkleRoot()
 
 	// Generate a proof for data
-	proof, err := tree.GenerateProof(data)
+	proof, err := tree.GenerateMProof(data)
 	if err != nil {
 		return nil, false, err
 	}
 
 	// Verify the proof for 'Baz'
-	verified, err := merkletree.VerifyMProofUsing(data, proof, root, hashing)
+	verified, err := merkletree.VerifyMProof(data, proof, root, hashing)
 
 	return proof, verified, err
 }
