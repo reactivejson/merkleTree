@@ -7,6 +7,11 @@ import (
 	"testing"
 )
 
+/**
+ * @author Mohamed-Aly Bou-Hanane
+ * © 2023
+ */
+
 func benchmarkMerkleTree(n int, b *testing.B) {
 	// create a slice of n byte arrays with each element having a size of 32 bytes
 	data := make([][]byte, n)

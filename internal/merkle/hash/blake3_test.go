@@ -3,13 +3,25 @@ package hash_test
 import (
 	"encoding/hex"
 	"fmt"
-	merkletree "github.com/reactivejson/merkleTree/internal/merkle"
 	hash2 "github.com/reactivejson/merkleTree/internal/merkle/hash"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
+/**
+ * @author Mohamed-Aly Bou-Hanane
+ * © 2023
+ */
+
+func stringToByte(input string) []byte {
+	x, err := hex.DecodeString(strings.TrimPrefix(input, "0x"))
+	if err != nil {
+		panic(err)
+	}
+	return x
+}
 func TestBlake3(t *testing.T) {
 	tests := []struct {
 		input []byte
@@ -17,7 +29,7 @@ func TestBlake3(t *testing.T) {
 	}{
 		{
 			input: []byte("Consensys"),
-			hash:  merkletree.stringToByte("37d279155d7afba864451532eb236103d43b8d410806322ea36be2b8f7731dfd"),
+			hash:  stringToByte("37d279155d7afba864451532eb236103d43b8d410806322ea36be2b8f7731dfd"),
 		},
 	}
 

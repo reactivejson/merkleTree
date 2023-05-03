@@ -22,16 +22,6 @@ type MerkleTree struct {
 	nodes [][]byte
 }
 
-// dataIndex returns Index of the data in the MerkleTree.
-func (t *MerkleTree) dataIndex(input []byte) (uint64, error) {
-	for i, data := range t.data {
-		if bytes.Equal(data, input) {
-			return uint64(i), nil
-		}
-	}
-	return 0, errors.New("data not found")
-}
-
 // NewTree creates a new Merkle tree using the provided raw input and default hash type.
 // data must contain at least one element for it to be valid.
 func NewTree(data [][]byte, hash hash2.HashType) (*MerkleTree, error) {
@@ -186,4 +176,14 @@ func (t *MerkleTree) UpdateLeaf(index uint64, newData []byte) error {
 	}
 
 	return nil
+}
+
+// dataIndex returns Index of the data in the MerkleTree.
+func (t *MerkleTree) dataIndex(input []byte) (uint64, error) {
+	for i, data := range t.data {
+		if bytes.Equal(data, input) {
+			return uint64(i), nil
+		}
+	}
+	return 0, errors.New("data not found")
 }
